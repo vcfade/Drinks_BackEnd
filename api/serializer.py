@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Clientes, Bares, Bartender, Productos, Ordenes, Detalle_De_Orden, Promociones
+from .models import Clientes, Bares, Bartenders, Productos, Ordenes, Detalle_De_Orden, Promociones
 
 
 class ClientesSerializer (serializers.ModelSerializer):
@@ -14,10 +14,10 @@ class BaresSerializer (serializers.ModelSerializer):
         model = Bares
         fields = '__all__'
         
-class BartenderSerializer (serializers.ModelSerializer):
+class BartendersSerializer (serializers.ModelSerializer):
     
     class Meta:
-        model = Bartender
+        model = Bartenders
         fields = '__all__'
         
 class ProductosSerializer (serializers.ModelSerializer):
