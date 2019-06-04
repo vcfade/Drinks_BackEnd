@@ -17,6 +17,7 @@ django-rest-swagger = "*"
 pydotplus = "*"
 
 [dev-packages]
+autopep8 = "*"
 
 [scripts]
 migrate= "python manage.py migrate"

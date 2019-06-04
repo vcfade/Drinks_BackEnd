@@ -1,19 +1,85 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.views import APIView
+
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+
 from rest_framework.response import Response
-from api.models import Clientes, Bares, Bartenders, Productos, Ordenes, Detalle_De_Orden, Promociones
-from .serializer import ClientesSerializer, BaresSerializer, BartendersSerializer, ProductosSerializer, OrdenesSerializer, Detalle_De_OrdenSerializer, PromocionesSerializer
+import json
+from api.models import Clientes, Bares, Bartenders, Productos, Ordenes, Detalle_De_Orden, Promociones, User, Roles
+from .serializer import ClientesSerializer, BaresSerializer, BartendersSerializer, ProductosSerializer, OrdenesSerializer, Detalle_De_OrdenSerializer, PromocionesSerializer, UserSerializer
 
 """
 The ContactsView will contain the logic on how to:
  GET, POST, PUT or delete the contacts
 """
+
+
+class LoginAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email,
+            'id': user.id,
+            'role_id':user.role_id,
+        })
+
+class RegisterCliente(APIView):
+    def post(self, request):
+        data = request.data
+        data['role'] = 1
+        serializer = UserSerializer(data=data, many=False)
+        if serializer.is_valid():
+            serializer.save()
+            #newUser = User.objects.create_user(serializer.save()) \
+            return Response(serializer.data)    
+        else:
+            return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class RegisterBartender(APIView):
+    def post(self, request):
+        data = request.data
+        data['role'] = 2
+        serializer = UserSerializer(data=data, many=False)
+        if serializer.is_valid():
+            serializer.save()
+            #newUser = User.objects.create_user(serializer.save()) \
+            return Response(serializer.data)    
+        else:
+            return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class RegisterAdmin(APIView):
+    def post(self, request):
+        data = request.data
+        data['role'] = 3
+        serializer = UserSerializer(data=data, many=False)
+        if serializer.is_valid():
+            serializer.save()
+            #newUser = User.objects.create_user(serializer.save()) \
+            return Response(serializer.data)    
+        else:
+            return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class Logout(APIView):
+    def get(self, request, format= None):
+        request.user.auth_token.delete()
+        return Response ({"detail": "Log Out"}, status=status.HTTP_200_OK )
+
 #################################>>>CLIENTES<<<###############################
 
 class ClientView(APIView):
     def get(self, request, cliente_id=None):
 
+        user = UserSerializer(User.objects.all(),many = True)
+        print (user)
         if cliente_id is not None:
             cliente = Clientes.objects.get(id=cliente_id)
             serializer = ClientesSerializer(cliente, many=False)
@@ -23,21 +89,10 @@ class ClientView(APIView):
             serializer = ClientesSerializer(clientes, many=True)
             return Response(serializer.data)
 
-    def post(self, request):
-
-        serializer = ClientesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
     def delete(self, request, cliente_id):
 
         cliente = Clientes.objects.get(id=cliente_id)
         cliente.delete()
-
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 #################################### FALTA AGREGAR PUT METHOD PARA ACTUALIZAR CLIENTE

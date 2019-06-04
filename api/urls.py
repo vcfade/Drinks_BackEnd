@@ -2,6 +2,15 @@ from django.contrib import admin
 from django.urls import path, include
 from api import views
 urlpatterns = [
+
+    
+    path('login/', views.LoginAuthToken.as_view(), name='login'),
+    path('registercliente/', views.RegisterCliente.as_view(), name='registro-cliente'),
+    path('registerbartender/', views.RegisterBartender.as_view(), name='registro-bartender'),
+    path('registeradministrador/', views.RegisterAdmin.as_view(), name='registro-bartender'),
+    path('logout/', views.Logout.as_view(), name='logout'),
+
+
     path('clientes/<int:cliente_id>', views.ClientView.as_view(), name='id-clientes'),
     path('clientes/', views.ClientView.as_view(), name='all-clientes'),
 

@@ -27,6 +27,8 @@ SECRET_KEY = "replace_me"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
+AUTH_USER_MODEL = 'api.User'
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,10 +44,22 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_extensions',
     'rest_framework_swagger',
     'api',
+    'django.contrib.sites',
 ]
+
+SITE_ID = 1
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -57,6 +71,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'api.customMiddleware.LoginRequiredMiddleware'
+    #'example_project.soetMiddleware.StackOverflowMiddleware' 
+    #'api.custom2.CustomRedirectMiddleware' 
+
 ]
 
 ROOT_URLCONF = 'example_project.urls'
@@ -143,3 +161,12 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+
+
+LOGIN_EXEMPT_URLS = (
+    r'^api/login/$',
+    r'^api/registercliente/$',
+    r'^api/logout/$'
+) 
+
